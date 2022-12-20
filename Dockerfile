@@ -49,12 +49,12 @@ ADD packages.txt /sdk
 RUN sdkmanager --package_file=/sdk/packages.txt
 
 # Install Fastlane
-#RUN apt-get update && \
-#apt-get install --no-install-recommends -y --allow-unauthenticated build-essential git ruby-full && \
-#gem install rake && \
-#gem install fastlane && \
-#gem install bundler && \
+RUN apt-get update && \
+apt-get install --no-install-recommends -y --allow-unauthenticated build-essential git ruby-full && \
+gem install rake && \
+gem install fastlane && \
+gem install bundler && \
 # Clean up
-#rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-#apt-get autoremove -y && \
-#apt-get clean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+apt-get autoremove -y && \
+apt-get clean
