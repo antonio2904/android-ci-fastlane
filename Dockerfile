@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
-MAINTAINER Jan Grewe <jan@faked.org>
+MAINTAINER Antony <antonyleons29@gmail.com>
 
-ENV VERSION_TOOLS "8512546"
+ENV VERSION_TOOLS "9123335"
 
 ENV ANDROID_SDK_ROOT "/sdk"
 # Keep alias for compatibility
@@ -47,3 +47,14 @@ RUN mkdir -p /root/.android \
 
 ADD packages.txt /sdk
 RUN sdkmanager --package_file=/sdk/packages.txt
+
+# Install Fastlane
+#RUN apt-get update && \
+#apt-get install --no-install-recommends -y --allow-unauthenticated build-essential git ruby-full && \
+#gem install rake && \
+#gem install fastlane && \
+#gem install bundler && \
+# Clean up
+#rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+#apt-get autoremove -y && \
+#apt-get clean
