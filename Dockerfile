@@ -14,7 +14,7 @@ apt-get install -qqy --no-install-recommends openjdk-17-jdk-headless curl unzip 
     build-essential git ruby-full && \
 locale-gen en_US.UTF-8 && \
 # Configure Bundler
-gem install bundler && \
+gem install bundler -v 2.4.3 && \
 bundle install && \
 #Install gitlab release-cli
 curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64" && \
