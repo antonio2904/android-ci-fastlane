@@ -8,6 +8,8 @@ ENV ANDROID_HOME /usr/local/android-sdk-linux
 ENV PATH $PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/bin
 
 COPY Gemfile .
+COPY Gemfile.lock .
+COPY fastlane ./fastlane
 
 RUN apt-get update && \
 apt-get install -qqy --no-install-recommends openjdk-17-jdk-headless curl unzip locales \
