@@ -1,59 +1,41 @@
 FROM ubuntu:20.04
 MAINTAINER Antony <antonyleons29@gmail.com>
 
-ENV VERSION_TOOLS "9123335"
-
-ENV ANDROID_SDK_ROOT "/sdk"
-# Keep alias for compatibility
-ENV ANDROID_HOME "${ANDROID_SDK_ROOT}"
-ENV PATH "$PATH:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools"
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get -qq update \
- && apt-get install -qqy --no-install-recommends \
-      bzip2 \
-      curl \
-      git-core \
-      html2text \
-      openjdk-11-jdk \
-      libc6-i386 \
-      lib32stdc++6 \
-      lib32gcc1 \
-      lib32ncurses6 \
-      lib32z1 \
-      unzip \
-      locales \
- && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN locale-gen en_US.UTF-8
+ENV ANDROID_SDK_URL https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip
+ENV ANDROID_API_LEVEL android-30
+ENV ANDROID_BUILD_TOOLS_VERSION 33.0.1
+ENV ANDROID_HOME /usr/local/android-sdk-linux
+ENV PATH $PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/bin
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN rm -f /etc/ssl/certs/java/cacerts; \
-    /var/lib/dpkg/info/ca-certificates-java.postinst configure
-
-RUN curl -s https://dl.google.com/android/repository/commandlinetools-linux-${VERSION_TOOLS}_latest.zip > /cmdline-tools.zip \
- && mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools \
- && unzip /cmdline-tools.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools \
- && mv ${ANDROID_SDK_ROOT}/cmdline-tools/cmdline-tools ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
- && rm -v /cmdline-tools.zip
-
-RUN mkdir -p $ANDROID_SDK_ROOT/licenses/ \
- && echo "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_SDK_ROOT/licenses/android-sdk-license \
- && echo "84831b9409646a918e30573bab4c9c91346d8abd\n504667f4c0de7af1a06de9f4b1727b84351f2910" > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license \
- && yes | sdkmanager --licenses >/dev/null
-
-RUN mkdir -p /root/.android \
- && touch /root/.android/repositories.cfg \
- && sdkmanager --update
-
-ADD packages.txt /sdk
-RUN sdkmanager --package_file=/sdk/packages.txt
-
-# Install Fastlane
 RUN apt-get update && \
+apt-get install -qqy --no-install-recommends openjdk-17-jdk-headless curl unzip locales && \
+locale-gen en_US.UTF-8 && \
+# Clean up
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+apt-get autoremove -y && \
+apt-get clean
+
+RUN mkdir "$ANDROID_HOME" .android && \
+    cd "$ANDROID_HOME" && \
+    curl -o sdk.zip $ANDROID_SDK_URL && \
+    unzip sdk.zip && \
+    rm sdk.zip && \
+# Download Android SDK
+yes | sdkmanager --licenses --sdk_root=$ANDROID_HOME && \
+sdkmanager --update --sdk_root=$ANDROID_HOME && \
+sdkmanager --sdk_root=$ANDROID_HOME "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+#    "platforms;android-${ANDROID_VERSION}" \
+    "platform-tools" \
+    "extras;android;m2repository" \
+    "extras;google;m2repository" && \
+# Install Ruby
+apt-get update && \
 apt-get install --no-install-recommends -y --allow-unauthenticated build-essential git ruby-full && \
-gem install rake && \
-gem install fastlane && \
 gem install bundler && \
+#Install gitlab release-cli
+curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64" && \
+chmod +x /usr/local/bin/release-cli && \
 # Clean up
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
 apt-get autoremove -y && \
