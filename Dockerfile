@@ -1,3 +1,4 @@
+#!/bin/bash
 FROM ubuntu:20.04
 MAINTAINER Antony <antonyleons29@gmail.com>
 
