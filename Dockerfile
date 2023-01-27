@@ -2,8 +2,7 @@
 FROM ubuntu:20.04
 MAINTAINER Antony <antonyleons29@gmail.com>
 
-ENV ANDROID_SDK_URL https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip
-ENV ANDROID_API_LEVEL android-30
+ENV ANDROID_SDK_URL https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
 ENV ANDROID_BUILD_TOOLS_VERSION 33.0.1
 ENV ANDROID_HOME /usr/local/android-sdk-linux
 ENV PATH $PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/bin
