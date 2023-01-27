@@ -7,6 +7,8 @@ ENV ANDROID_API_LEVEL android-30
 ENV ANDROID_BUILD_TOOLS_VERSION 33.0.1
 ENV ANDROID_HOME /usr/local/android-sdk-linux
 ENV PATH $PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/bin
+ARG TARGETPLATFORM
+ARG RELEASE_CLI_ARCH
 
 COPY Gemfile .
 COPY Gemfile.lock .
@@ -20,7 +22,8 @@ locale-gen en_US.UTF-8 && \
 gem install bundler -v 2.4.3 && \
 bundle install && \
 #Install gitlab release-cli
-curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64" && \
+if [ "$TARGETPLATFORM" = "linux/arm64" ] ; then RELEASE_CLI_ARCH=arm64; else RELEASE_CLI_ARCH=amd64; fi && echo "VAR is equal to ${RELEASE_CLI_END}" && \
+curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-${RELEASE_CLI_ARCH}" && \
 chmod +x /usr/local/bin/release-cli && \
 # Clean up
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
